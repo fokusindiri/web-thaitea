@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Tea - High Tech Workspace</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            cyan: '#00F0FF', /* Cyber Cyan */
+                            emerald: '#00FF66', /* Emerald Green */
+                            amber: '#FFBF00', /* Neon Amber */
+                            dark: '#0D1117',
+                            surface: '#161B22',
+                            border: '#30363D'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Efek Animasi & Transisi Berkinerja Tinggi */
+        .fade-enter-active,
+        .fade-leave-active {
+            transition: all 0.3s ease-in-out;
+        }
+        .fade-enter-from,
+        .fade-leave-to {
+            opacity: 0;
+            transform: translateY(15px); /* Efek fade-in-up */
+        }
+        
+        /* Efek Typing Animation pada bagian hero / terminal mockup */
+        .typing-effect {
+            border-right: 2px solid #00FF66;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 2.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #00FF66; }
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-gray-300 font-mono min-h-screen">
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
+        
+        <header class="flex flex-col md:flex-row md:items-center justify-between border-b border-brand-border pb-4 mb-8">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-brand-emerald">
+                    <path d="M4 4H20V8L16 20H8L4 8V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1 class="text-xl font-bold text-white">{{ appConfig.siteName }}</h1>
+            </div>
+            
+            <nav class="flex space-x-1 overflow-x-auto">
+                <button 
+                    v-for="tab in appConfig.tabs" 
+                    :key="tab.id"
+                    @click="activeTab = tab.id"
+                    :class="['px-5 py-2.5 rounded-t-md border-t border-x transition-all duration-300 ease-in-out whitespace-nowrap min-w-[48px] min-h-[48px]', 
+                             activeTab === tab.id ? 'bg-brand-surface border-brand-emerald text-brand-emerald shadow-[0_-2px_10px_rgba(0,255,102,0.1)]' : 'border-transparent text-gray-500 hover:text-gray-300 hover:bg-gray-800']"
+                >
+                    {{ tab.label }}
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <transition name="fade" mode="out-in">
+                
+                <div v-if="activeTab === 'home'" key="home" class="space-y-8">
+                    <div class="bg-brand-surface border border-brand-border p-8 rounded-lg shadow-2xl relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-r from-brand-emerald/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <h2 class="text-3xl md:text-5xl font-bold text-white mb-4 inline-block typing-effect">
+                            > root@thaitea:~$ ./init
+                        </h2>
+                        <p class="text-lg md:text-xl text-gray-400 mt-4 leading-relaxed">
+                            Sistem inisialisasi berhasil. Menyeduh kode berkualitas tinggi dengan perpaduan rasa premium khas Thailand.
+                        </p>
+                        <div class="mt-8 flex space-x-4">
+                            <button @click="activeTab = 'catalog'" class="bg-brand-emerald text-brand-dark px-6 py-3 rounded font-bold hover:bg-brand-cyan hover:scale-105 transition-all duration-300 min-h-[48px] min-w-[48px]">
+                                _Lihat Katalog Produk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else-if="activeTab === 'catalog'" key="catalog">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
+                        <div v-for="product in products" :key="product.id" class="bg-brand-surface border border-brand-border rounded-lg overflow-hidden hover:-translate-y-2 hover:border-brand-emerald hover:shadow-[0_0_15px_rgba(0,255,102,0.2)] transition-all duration-300 group">
+                            <div class="h-56 overflow-hidden relative">
+                                <img :src="product.imagePath" :alt="product.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                <div class="absolute top-0 right-0 bg-brand-emerald text-brand-dark text-xs font-bold px-2 py-1 m-2 rounded">
+                                    [STOK_TERSEDIA]
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white mb-2">{{ product.name }}</h3>
+                                <p class="text-sm text-gray-400 mb-6 h-12 overflow-hidden">{{ product.description }}</p>
+                                
+                                <div class="mt-4 pt-4 border-t border-brand-border flex justify-between items-center">
+                                    <span class="text-2xl font-bold text-brand-cyan tracking-wider py-2">{{ product.price }}</span>
+                                    <button class="px-5 py-2 border border-brand-emerald text-brand-emerald hover:bg-brand-emerald hover:text-brand-dark transition-colors duration-300 rounded font-bold min-h-[48px] min-w-[48px]">
+                                        > Beli
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </transition>
+        </main>
+    </div>
+
+    <script>
+        const { createApp, ref, watch, onMounted } = Vue;
+
+        // Customization Engine: Data terpusat (Data-Driven Catalog)
+        const appConfig = {
+            siteName: "ThaiTea_Workspace",
+            theme: "dark",
+            tabs: [
+                { id: "home", label: "./Beranda" },
+                { id: "catalog", label: "./Katalog_Sistem" }
+            ]
+        };
+
+        const products = [
+            {
+                id: 1,
+                name: "Original Thai Tea",
+                price: "Rp 15.000",
+                description: "Varian klasik dengan teh hitam autentik Thailand dan susu kental manis.",
+                // Pastikan untuk mengganti URL ini dengan aset berformat .webp Anda
+                imagePath: "https://images.unsplash.com/photo-1557142046-c704a3adf364?auto=format&fit=crop&q=80&w=600" 
+            },
+            {
+                id: 2,
+                name: "Cyber Green Tea",
+                price: "Rp 18.000",
+                description: "Ekstrak green tea dengan aroma bunga melati yang menyegarkan di setiap tegukan.",
+                imagePath: "https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?auto=format&fit=crop&q=80&w=600"
+            },
+            {
+                id: 3,
+                name: "Coffee Mocha Tea",
+                price: "Rp 20.000",
+                description: "Pembaruan sistem: gabungan espresso robusta dengan teh Thailand murni.",
+                imagePath: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&q=80&w=600"
+            }
+        ];
+
+        createApp({
+            setup() {
+                // Reactive State Engine 
+                const activeTab = ref('home');
+
+                // Membaca hash dari URL saat halaman dimuat agar bookmarkable
+                onMounted(() => {
+                    const hash = window.location.hash.replace('#', '');
+                    if (appConfig.tabs.some(t => t.id === hash)) {
+                        activeTab.value = hash;
+                    }
+                });
+
+                // URL hash otomatis berubah sesuai tab yang aktif
+                watch(activeTab, (newVal) => {
+                    window.location.hash = newVal;
+                });
+
+                return {
+                    appConfig,
+                    products,
+                    activeTab
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
